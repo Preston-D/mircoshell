@@ -65,53 +65,43 @@ ssize_t getinput(char **line, size_t *size)
  */
 void processline(char *line)
 {
-  /*check whether line is empty*/
-  // write your code
-
-  pid_t cpid;
-  int status;
-  int argCount;
-  char **arguments = argparse(line, &argCount);
-
-  /*check whether arguments are builtin commands
-   *if not builtin, fork to execute the command.
-   */
-  if (line[0] == '\0' || line[0] == '\n')
+  // Check whether the line is empty
+  if (line[0] != '\0' && line[0] != '\n')
   {
-    return;
-  }
+    int argcp;
+    char **args = argparse(line, &argcp);
 
-  int argcp;
-  char **args = argparse(line, &argcp);
-
-  if (!builtIn(args,
-               argcp))
-  {
-    pid_t cpid = fork();
-    if (cpid == -1)
+    // Check whether arguments are built-in commands
+    // If not built-in, fork to execute the command.
+    if (!builtIn(args, argcp))
     {
-      perror("fork");
-    }
-    else if (cpid == 0)
-    {
-      // Child process
-      if (execvp(args[0], args) == -1)
+      pid_t cpid = fork();
+      if (cpid == -1)
       {
-        perror(args[0]);
+        perror("fork");
       }
-      exit(EXIT_FAILURE);
+      else if (cpid == 0)
+      {
+        // Child process
+        if (execvp(args[0], args) == -1)
+        {
+          perror(args[0]);
+        }
+        exit(EXIT_FAILURE);
+      }
+      else
+      {
+        // Parent process
+        int status;
+        waitpid(cpid, &status, 0);
+      }
     }
-    else
-    {
-      // Parent process
-      int status;
-      waitpid(cpid, &status, 0);
-    }
-  }
 
-  for (int i = 0; i < argcp; i++)
-  {
-    free(args[i]);
+    // Free allocated memory
+    for (int i = 0; i < argcp; i++)
+    {
+      free(args[i]);
+    }
+    free(args);
   }
-  free(args);
 }

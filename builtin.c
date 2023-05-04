@@ -26,30 +26,34 @@ static void pwd(char **args, int argcp);
  */
 int builtIn(char **args, int argcp)
 {
+  int result = 0;
+
   if (strcmp(args[0], "exit") == 0)
   {
     exitProgram(args, argcp);
-    return 1;
+    result = 1;
   }
   else if (strcmp(args[0], "pwd") == 0)
   {
     pwd(args, argcp);
-    return 1;
+    result = 1;
   }
   else if (strcmp(args[0], "cd") == 0)
   {
     cd(args, argcp);
-    return 1;
+    result = 1;
   }
-  else
-  {
-    return 0;
-  }
+
+  return result;
 }
 
+// This function is called when the "exit" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void exitProgram(char **args, int argcp)
 {
   int status = 0;
+  // Convert the second argument to an integer using atoi() and use it as the exit status.
   if (argcp > 1)
   {
     status = atoi(args[1]);
@@ -57,6 +61,9 @@ static void exitProgram(char **args, int argcp)
   exit(status);
 }
 
+// This function is called when the "pwd" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void pwd(char **args, int argpc)
 {
   if (argpc > 1)
@@ -65,6 +72,7 @@ static void pwd(char **args, int argpc)
     return;
   }
   char cwd[PATH_MAX];
+  // Get the current working directory and prints it.
   if (getcwd(cwd, sizeof(cwd)) != NULL)
   {
     printf("%s\n", cwd);
@@ -75,6 +83,9 @@ static void pwd(char **args, int argpc)
   }
 }
 
+// This function is called when the "cd" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void cd(char **args, int argcp)
 {
   if (argcp > 2)
@@ -83,6 +94,7 @@ static void cd(char **args, int argcp)
     return;
   }
   const char *path = argcp == 1 ? getenv("HOME") : args[1];
+  // Change the current working directory to the specified path.
   if (chdir(path) == -1)
   {
     perror("cd");
