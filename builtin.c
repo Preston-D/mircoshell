@@ -1,3 +1,8 @@
+// builtin.c
+// This file handles all the builtin functions for myshell and
+// Group A,B functions.
+// The builtIn method is called to determin if a process should be forked or handled in builtin.
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,18 +20,22 @@
 #include <time.h>
 #include <utime.h>
 
+// Constants
 #define MAX_BUFFER 1024
 
+// Global variable defined elsewhere
+// availability can depend on the specific system and C library being used.
 extern char **environ;
 
 // Prototypes
 static void exitProgram(char **args, int argcp);
 static void cd(char **args, int argpcp);
 static void pwd(char **args, int argcp);
-
+// Group A
 static void ls(char **args, int argcp);
 static void cp(char **args, int argcp);
 static void touch(char **args, int argcp);
+// Group B
 static void statFunc(char **args, int argcp);
 static void tail(char **args, int argcp);
 static void env(char **args, int argcp);
@@ -135,6 +144,7 @@ static void cd(char **args, int argcp)
     fprintf(stderr, "cd: too many arguments\n");
     return;
   }
+  // This is saying "if argcp equals 1, then use getenv("HOME"), otherwise use args[1]"
   const char *path = argcp == 1 ? getenv("HOME") : args[1];
   // Change the current working directory to the specified path.
   if (chdir(path) == -1)
@@ -143,6 +153,9 @@ static void cd(char **args, int argcp)
   }
 }
 
+// This function is called when the "ls" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void ls(char **args, int argcp)
 {
   // Check if number of arguments is valid
@@ -180,6 +193,9 @@ static void ls(char **args, int argcp)
   }
 }
 
+// This function is called when the "cp" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void cp(char **args, int argcp)
 {
   // Check if number of arguments is valid
@@ -232,6 +248,10 @@ static void cp(char **args, int argcp)
   close(destFD);
 }
 
+// This function is called when the "touch" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
+
 static void touch(char **args, int argcp)
 {
   // Check if number of arguments is valid
@@ -264,32 +284,9 @@ static void touch(char **args, int argcp)
   }
 }
 
-// static void statCommand(char **args, int argcp)
-// {
-//   // Check if number of arguments is valid
-//   if (argcp != 2)
-//   {
-//     fprintf(stderr, "stat: incorrect number of arguments\n");
-//     return;
-//   }
-
-//   char *file = args[1];
-//   struct stat fileStat;
-
-//   if (stat(file, &fileStat) == -1)
-//   {
-//     perror("stat");
-//     return;
-//   }
-
-//   printf("File: %s\n", file);
-//   printf("Size: %lld\n", fileStat.st_size);
-//   printf("Inode: %ld\n", fileStat.st_ino);
-//   printf("Access time: %ld\n", fileStat.st_atime);
-//   printf("Modification time: %ld\n", fileStat.st_mtime);
-//   printf("Change time: %ld\n", fileStat.st_ctime);
-// }
-
+// This function is called when the "stat" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void statFunc(char **args, int argcp)
 {
   struct stat fileStat;
@@ -326,6 +323,9 @@ static void statFunc(char **args, int argcp)
   }
 }
 
+// This function is called when the "tail" command is entered.
+// It takes two arguments: args, a pointer to an array of command-line arguments,
+// and argcp, an integer representing the number of arguments.
 static void tail(char **args, int argcp)
 {
   // Check if number of arguments is valid

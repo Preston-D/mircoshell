@@ -1,6 +1,9 @@
 /* CS 347 -- Mini Shell!
  * Original author Phil Nelson 2000
  */
+// Modification by Preston Duffield
+// A shell environment thatwill parse the user input
+// myshell has its own set of built-in commands.
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
