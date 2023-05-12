@@ -1,10 +1,12 @@
+// Preston Duffield
+
 /*This program should fetch the exit code from threads tid1 and tid2.
   Expected Output:
   thread 1 returning
   thread 2 exiting
   thread 1 exit code 1
   thread 2 exit code 2
- 
+
   Fix the code to produce the expected output.
  */
 #include <stdlib.h>
@@ -14,7 +16,7 @@
 void *thr_fn1(void *arg)
 {
     printf("thread 1 returning\n");
-    return((void *)1);
+    return ((void *)1);
 }
 
 void *thr_fn2(void *arg)
@@ -25,18 +27,27 @@ void *thr_fn2(void *arg)
 
 int main()
 {
-    int          err;
-    pthread_t    tid1, tid2;
-    void         *tret=0;
+    int err;
+    pthread_t tid1, tid2;
+    void *tret1, *tret2; // init tret2
 
+    // pthread_join() should be used after the creation of each thread to wait for the thread to terminate and to retrieve the exit status.
     err = pthread_create(&tid1, NULL, thr_fn1, NULL);
     if (err != 0)
         perror("can't create thread 1");
+    //  wait for the thread to terminate and to retrieve the exit status.
     err = pthread_create(&tid2, NULL, thr_fn2, NULL);
     if (err != 0)
-        perror( "can't create thread 2");
-  
-    printf("thread 1 exit code %ld\n", (long)tret);
-    printf("thread 2 exit code %ld\n", (long)tret);
+        perror("can't create thread 2");
+
+    err = pthread_join(tid1, &tret1);
+    if (err != 0)
+        perror("can't join with thread 1");
+    err = pthread_join(tid2, &tret2);
+    if (err != 0)
+        perror("can't join with thread 2");
+
+    printf("thread 1 exit code %ld\n", (long)tret1);
+    printf("thread 2 exit code %ld\n", (long)tret2);
     exit(0);
 }
